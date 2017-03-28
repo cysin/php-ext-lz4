@@ -146,7 +146,8 @@ static ZEND_FUNCTION(lz4_compress)
 {
     zval *data;
     char *output;
-    int output_len, data_len, dst_len;
+    int output_len, dst_len;
+    size_t data_len;
     long level = 0;
     long maxLevel = (long)PHP_LZ4_CLEVEL_MAX;
     char *extra = NULL;
@@ -172,7 +173,7 @@ static ZEND_FUNCTION(lz4_compress)
     if (extra && extra_len > 0) {
         offset = extra_len;
     } else {
-        offset = sizeof(int);
+        offset = sizeof(size_t);
     }
 
     data_len = Z_STRLEN_P(data);
@@ -219,7 +220,8 @@ static ZEND_FUNCTION(lz4_compress)
 static ZEND_FUNCTION(lz4_uncompress)
 {
     zval *data;
-    int output_len, data_size;
+    int output_len;
+    size_t data_size;
     char *output;
 #if ZEND_MODULE_API_NO >= 20141001
     zend_long max_size = -1, offset = 0;
@@ -241,11 +243,11 @@ static ZEND_FUNCTION(lz4_uncompress)
     if (max_size > 0) {
         data_size = max_size;
         if (!offset) {
-            offset = sizeof(int);
+            offset = sizeof(size_t);
         }
     } else {
         /* Get data length */
-        offset = sizeof(int);
+        offset = sizeof(size_t);
         memcpy(&data_size, Z_STRVAL_P(data), offset);
     }
 
